@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  config:
+    image: mongo
+    container_name: config
+    ports:
+      - 27010:27010
+    networks:
+      - mongo_tutorial
+    command: mongod --configsvr --replSet rs0 --port 27010
+  router:
+    image: mongo
+    container_name: router
+    ports:
+      - 27011:27011
+    networks:
+      - mongo_tutorial
+    command: mongos --bind_ip_all --configdb rs0/config:27010 --port 27011
+  shard1:
+    image: mongo
+    container_name: shard1
+    ports:
+      - 27012:27012
+    networks:
+      - mongo_tutorial
+    command: mongod --shardsvr --replSet rs1 --port 27012
+  shard2:
+    image: mongo
+    container_name: shard2
+    ports:
+      - 27013:27013
+    networks:
+      - mongo_tutorial
+    command: mongod --shardsvr --replSet rs2 --port 27013
+networks:
+  mongo_tutorial:
+    external: false
+    name: mongo_tutorial
